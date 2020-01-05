@@ -5,9 +5,9 @@
 #include <time.h>
 #include <assert.h>
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 
-#include <SDL/SDL_gfxPrimitives.h>
+#include <SDL_gfxPrimitives.h>
 
 #include "primlib.h"
 
