@@ -7,7 +7,7 @@
 
 #include <SDL.h>
 
-#include <SDL_gfxPrimitives.h>
+#include <SDL2_gfxPrimitives.h>
 
 #include "primlib.h"
 

@@ -2,7 +2,7 @@
 #define __PRIMLIB_H__
 
 #include <SDL.h>
-#include <SDL_gfxPrimitives.h>
+#include <SDL2_gfxPrimitives.h>
 int initGraph();
 enum color {BLACK, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, COLOR_MAX};
 void pixel(int x, int y, enum color c);
