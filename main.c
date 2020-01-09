@@ -124,8 +124,8 @@ void drawField() {
                     rect(x1, y1, x2, y2, BLACK);
                 } else if (field[counter_c][counter_r] == 3) {
                     filledRect(x1, y1, x2, y2, RED);
+                    rect(x1, y1, x2, y2, WHITE);
                 }
-
             }
         }
     }
@@ -223,8 +223,10 @@ int setNewPieceInField(int type) {
         for (int counterR = 0; counterR < 4; counterR++) {
             if (field[actualC + counterC][counterR] == 0) {
                 field[actualC + counterC][counterR] = pieces[type][rotation][counterC][counterR];
-            } else if (pieces[type][rotation][counterC][counterR] != 0)
+            } else {
+                // Tile already occupied, GameOver
                 return -1;
+            }
         }
     }
 
