@@ -1,17 +1,7 @@
 #include <SDL.h>
 #include <SDL2_gfxPrimitives.h>
 
-enum color {
-    BLACK,
-    RED,
-    GREEN,
-    BLUE,
-    CYAN,
-    MAGENTA,
-    YELLOW,
-    WHITE,
-    COLOR_MAX
-};
+enum color { BLACK, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, COLOR_MAX };
 
 int initGraph(char *title);
 
