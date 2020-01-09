@@ -28,6 +28,6 @@ add_executable(tetris
         main.c
         pieces.inl
         primlib.c
-        primlib.h colors.c)
+        primlib.h)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARIES})
