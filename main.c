@@ -2,6 +2,7 @@
 #include "primlib.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 /* Constants */
 #define DELAY 16
@@ -241,6 +242,7 @@ void movePiece(int key) {
             break;
         case SDLK_LEFT:
             moveLeft();
+            moveDown();
             break;
         case SDLK_RIGHT:
             moveRight();
@@ -264,69 +266,55 @@ void movePiece(int key) {
 }
 
 void moveLeft() {
-    int isPosible = 1; /* 1 is possible, 0 no */
+    bool isPossible = true;
+    // The following nested `for` decides if the movement is possible or not
+    for (int counterC = 0; counterC < 4 && isPossible; counterC++) {
+        for (int counterR = 0; counterR < 4; counterR++) {
+            if (actualC + counterC <= 0) {
+                // We have reached the limit of the board, movement not possible
+                isPossible = false;
+                break;
+            }
 
-    for (int counterC = 0; counterC < 4 && isPosible == 1; counterC++) {
-        for (int counterR = 0; counterR < 4 && isPosible == 1; counterR++) {
-            if (actualC + counterC >= 0 && actualC + counterC < F_COLS) {
-                int insidePosition;
-                int insidePositionLeft;
-
-                insidePosition = field[actualC + counterC][actualR + counterR];
-
-                if (insidePosition == 1 || insidePosition == 2) {
-                    if (actualC + counterC > 0) {
-                        insidePositionLeft = field[actualC + counterC - 1][actualR + counterR];
-
-                        if (insidePositionLeft != 3) {
-                            /* OK */
-                        } else {
-                            isPosible = 0;
-                            break;
-                        }
-                    } else {
-                        isPosible = 0;
-                        break;
-                    }
+            int insidePosition = field[actualC + counterC][actualR + counterR];
+            if (insidePosition == 1 || insidePosition == 2) {
+                int insidePositionLeft = field[actualC + counterC - 1][actualR + counterR];
+                if (insidePositionLeft == 3) {
+                    // Tile already occupied by another piece, movement is not possible
+                    isPossible = false;
+                    break;
                 }
             }
         }
     }
 
-    if (isPosible == 1) {
-        for (int counterC = 0; counterC < 4; counterC++) {
-            for (int counterR = 0; counterR < 4; counterR++) {
-                if (actualC + counterC >= 0 && actualC + counterC < F_COLS) {
-                    int insidePosition;
-                    int insidePositionRight;
-
-                    insidePosition = field[actualC + counterC][actualR + counterR];
-
-                    if (insidePosition == 1 || insidePosition == 2) {
-                        if (actualC + counterC > 0 && actualC + counterC < F_COLS) {
-                            field[actualC + counterC - 1][actualR + counterR] = insidePosition;
-
-                            if (actualC + counterC + 1 < F_COLS) {
-                                insidePositionRight = field[actualC + counterC + 1][actualR + counterR];
-
-                                if (insidePositionRight == 0 || insidePositionRight == 3) {
-                                    field[actualC + counterC][actualR + counterR] = 0;
-                                }
-                            } else {
-                                field[actualC + counterC][actualR + counterR] = 0;
-                            }
-
-                        }
-                    }
-                }
-
-            }
-        }
-
-        actualC -= 1;
+    if (!isPossible) {
+        return;
     }
 
-    moveDown();
+    // Movement is possible, apply it
+    for (int counterC = 0; counterC < 4; counterC++) {
+        for (int counterR = 0; counterR < 4; counterR++) {
+            int insidePosition = field[actualC + counterC][actualR + counterR];
+            if (actualC + counterC == F_COLS || (insidePosition != 1 && insidePosition != 2)) {
+                continue;
+            }
+
+            field[actualC + counterC - 1][actualR + counterR] = insidePosition;
+
+            // Update what was in my position to be empty unless another part of the current piece is there
+            if (actualC + counterC + 1 < F_COLS) {
+                int insidePositionRight = field[actualC + counterC + 1][actualR + counterR];
+                if (insidePositionRight == 0 || insidePositionRight == 3) {
+                    field[actualC + counterC][actualR + counterR] = 0;
+                }
+            } else {
+                field[actualC + counterC][actualR + counterR] = 0;
+            }
+        }
+    }
+
+    actualC -= 1;
 }
 
 void moveRight() {
