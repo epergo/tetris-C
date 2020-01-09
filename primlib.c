@@ -86,28 +86,31 @@ int initGraph(char *title) {
         return 1;
     }
 
-    //Initialize SDL
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not be initialized! SDL_Error: %s\n", SDL_GetError());
-    } else {
-        //Create window
-        sdlWindow = SDL_CreateWindow(
-                title,
-                SDL_WINDOWPOS_UNDEFINED,
-                SDL_WINDOWPOS_UNDEFINED,
-                800,
-                600,
-                SDL_WINDOW_SHOWN
-        );
-        if (sdlWindow == NULL) {
-            fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        } else {
-            sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
-            if (sdlRenderer == NULL) {
-                fprintf(stderr, "Error when obtaining the renderer, SDL_Error: %s\n", SDL_GetError());
-                return 1;
-            }
-        }
+        return 1;
+    }
+
+    // Create window
+    sdlWindow = SDL_CreateWindow(
+            title,
+            SDL_WINDOWPOS_UNDEFINED,
+            SDL_WINDOWPOS_UNDEFINED,
+            800,
+            600,
+            SDL_WINDOW_SHOWN
+    );
+
+    if (sdlWindow == NULL) {
+        fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
+    if (sdlRenderer == NULL) {
+        fprintf(stderr, "Error when obtaining the renderer, SDL_Error: %s\n", SDL_GetError());
+        return 1;
     }
 
     return 0;
