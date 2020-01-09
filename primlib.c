@@ -34,6 +34,10 @@ void filledRect(int x1, int y1, int x2, int y2, enum color c) {
     boxColor(sdlRenderer, x1, y1, x2, y2, colors[c]);
 }
 
+void filledRectRGB(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
+    boxRGBA(sdlRenderer, x1, y1, x2, y2, r, g, b, 255);
+}
+
 void clearScreen() {
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(sdlRenderer);

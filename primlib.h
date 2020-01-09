@@ -22,6 +22,7 @@ void clearScreen();
 void updateScreen();
 
 void filledRect(int x1, int y1, int x2, int y2, enum color c);
+void filledRectRGB(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b);
 
 void rect(int x1, int y1, int x2, int y2, enum color c);
 
