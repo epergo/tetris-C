@@ -24,12 +24,6 @@ INCLUDE_DIRECTORIES(${SDL2_GFX_INCLUDE_DIRS})
 
 include_directories(.)
 
-add_executable(tetris
-        main.c
-        pieces.inl
-        primlib.c
-        primlib.h
-        game.c
-        game.h)
+add_executable(tetris main.c pieces.inl primlib.c primlib.h game.c game.h userInterface.c userInterface.h)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARIES})

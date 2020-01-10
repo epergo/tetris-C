@@ -1,21 +1,23 @@
 #include "game.h"
 #include "pieces.inl"
 #include "primlib.h"
+#include "userInterface.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 
 /* Global variables */
+bool drawGrill = false;
+bool playing = true;
+int rotation = 0;
+int score = 0;
+
 int field[F_COLS][F_ROWS];
-int drawGrill;
-int playing; /* 1 keep playing, 0 exit */
 int actualC;
 int actualR;
 double actualY;
 int actualPiece;
 int nextPiece;
-int rotation;
-int score;
 
 int play() {
   /* Init the seed for random numbers */
@@ -25,12 +27,6 @@ int play() {
   if (initGraph("It's Tetris!")) {
     exit(3);
   }
-
-  /* Init variables */
-  playing = 1;
-  drawGrill = -1;
-  rotation = 0;
-  score = 0;
 
   /* Puts all the positions to 0 */
   initField();
@@ -44,139 +40,19 @@ int play() {
     clearScreen();
     int keyPressed = getKey();
     if (keyPressed == -1) {
-      playing = 0;
+      playing = false;
     } else {
       movePiece(keyPressed);
-      drawField();
-      drawControlsAndScore();
-      drawNextPiece();
+      drawField(field, drawGrill);
+      drawControlsAndScore(score);
+      drawNextPiece(pieces, nextPiece);
 
       updateScreen();
       SDL_Delay(DELAY);
     }
-  } while (playing == 1);
+  } while (playing);
 
   freeResources();
-}
-
-/* ********************** DRAW FUNCTIONS ********************** */
-void drawField() {
-  int squareWidth = 20;
-  double screenWidthPadding = (screenWidth() - (F_COLS * squareWidth)) / 2;
-  double screenHeightPadding = (screenHeight() - (F_ROWS * squareWidth)) / 2;
-
-  /* Decoration of the field */
-  rect(screenWidthPadding - 5, screenHeightPadding - 5, screenWidthPadding + 20 * F_COLS + 4,
-       screenHeightPadding + 20 * F_ROWS + 3, BLUE);
-  rect(screenWidthPadding - 3, screenHeightPadding - 3, screenWidthPadding + 20 * F_COLS + 6,
-       screenHeightPadding + 20 * F_ROWS + 6, BLUE);
-
-  for (int counter_c = 0; counter_c < F_COLS; counter_c++) {
-    for (int counter_r = 0; counter_r < F_ROWS; counter_r++) {
-      int x1 = screenWidthPadding + counter_c * 20;
-      int x2 = screenWidthPadding + (counter_c + 1) * 20;
-      int y1 = screenHeightPadding + counter_r * 20;
-      int y2 = screenHeightPadding + (counter_r + 1) * 20;
-
-      if (field[counter_c][counter_r] == 0) {
-        if (drawGrill == 1)
-          rectRGB(x1, y1, x2, y2, 92, 92, 92);
-      } else {
-        if (field[counter_c][counter_r] == 2) {
-          filledRect(x1, y1, x2, y2, YELLOW);
-          rect(x1, y1, x2, y2, BLACK);
-        } else if (field[counter_c][counter_r] == 1) {
-          filledRect(x1, y1, x2, y2, GREEN);
-          rect(x1, y1, x2, y2, BLACK);
-        } else if (field[counter_c][counter_r] == 3) {
-          filledRect(x1, y1, x2, y2, RED);
-          rect(x1, y1, x2, y2, WHITE);
-        }
-      }
-    }
-  }
-}
-
-void drawControlsAndScore() {
-  int padding = 30;
-  int increment = 15;
-  int squareWidth = 20;
-  double screenWidthPadding = (screenWidth() - (F_COLS * squareWidth)) / 2;
-  double screenHeightPadding = (screenHeight() - (F_ROWS * squareWidth)) / 2;
-
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
-          "CONTROLS:", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "1", RED);
-  textOut(screenWidth() - screenWidthPadding + 33, screenHeightPadding + padding,
-          "-> draw a grill to", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "help you",
-          YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "left arrow",
-          RED);
-  textOut(screenWidth() - screenWidthPadding + 115, screenHeightPadding + padding, "-> move the",
-          YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
-          "piece to the left", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "right arrow",
-          RED);
-  textOut(screenWidth() - screenWidthPadding + 113, screenHeightPadding + padding, "-> move the",
-          YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
-          "piece to the right", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "space ", RED);
-  textOut(screenWidth() - screenWidthPadding + 73, screenHeightPadding + padding,
-          "-> piece to floor", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "enter", RED);
-  textOut(screenWidth() - screenWidthPadding + 65, screenHeightPadding + padding, "-> rotate piece",
-          YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "ESC", RED);
-  textOut(screenWidth() - screenWidthPadding + 49, screenHeightPadding + padding,
-          "-> exits the game", YELLOW);
-  padding += increment;
-
-  char str[100];
-  sprintf(str, "%d", score);
-
-  textOut(50, screenHeightPadding + padding, "SCORE: ", YELLOW);
-  textOut(50 + 48, screenHeightPadding + padding, str, YELLOW);
-}
-
-void drawNextPiece() {
-  int squareWidth = 20;
-
-  double screenWidthPadding = (screenWidth() - (F_COLS * squareWidth)) / 8;
-  double screenHeightPadding = (screenHeight() - (F_ROWS * squareWidth)) / 2;
-
-  textOut(screenWidthPadding, screenHeightPadding + 5, "NEXT PIECE:", YELLOW);
-
-  rect(screenWidthPadding - 5, screenHeightPadding - 5, screenWidthPadding + 20 * 4 + 10,
-       screenHeightPadding + 20 * 6 + 5, RED);
-  rect(screenWidthPadding - 3, screenHeightPadding - 3, screenWidthPadding + 20 * 4 + 13,
-       screenHeightPadding + 20 * 6 + 8, RED);
-
-  for (int counterC = 0; counterC < 4; counterC++) {
-    for (int counterR = 0; counterR < 4; counterR++) {
-      int x1 = screenWidthPadding + (counterC + 1) * 20;
-      int x2 = screenWidthPadding + (counterC + 2) * 20;
-      int y1 = screenHeightPadding + (counterR + 2) * 20;
-      int y2 = screenHeightPadding + (counterR + 3) * 20;
-
-      if (pieces[nextPiece][0][counterC][counterR] == 1) {
-        filledRect(x1, y1, x2, y2, GREEN);
-      } else if (pieces[nextPiece][0][counterC][counterR] == 2) {
-        filledRect(x1, y1, x2, y2, YELLOW);
-      }
-    }
-  }
 }
 
 /* INIT FIELD FUNCTION */
@@ -213,7 +89,7 @@ void movePiece(int key) {
   int wait;
   switch (key) {
   case SDLK_1:
-    drawGrill = -drawGrill;
+    drawGrill = !drawGrill;
     break;
   case SDLK_LEFT:
     moveLeft();
@@ -231,7 +107,7 @@ void movePiece(int key) {
     rotatePiece();
     break;
   case SDLK_ESCAPE:
-    playing = 0;
+    playing = false;
     exit(0);
   default:
     moveDown();
@@ -430,9 +306,6 @@ int moveDown() {
 void rotatePiece() {
   int pos;
   int pos_f;
-  int c;
-  int r;
-  int y = 99;
   int yActual = 99;
   int exit = 0;
   int isPossible = 0;
@@ -568,13 +441,13 @@ void endGame() {
 
   switch (key) {
   case SDLK_RETURN:
-    playing = 1;
+    playing = true;
     actualPiece = rand() % 7;
 
     setNewPieceInField(actualPiece);
     break;
   case SDLK_ESCAPE:
-    playing = 0;
+    playing = false;
     exit(0);
   }
 }

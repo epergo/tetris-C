@@ -5,9 +5,6 @@
 
 int play();
 void initField();
-void drawField();
-void drawControlsAndScore();
-void drawNextPiece();
 void movePiece(int);
 void moveLeft();
 void moveRight();
