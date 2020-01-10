@@ -127,7 +127,7 @@ void moveLeft() {
       }
 
       int insidePosition = field[actualC + counterC][actualR + counterR];
-      if (insidePosition == 1 || insidePosition == 2) {
+      if (insidePosition == 1) {
         int insidePositionLeft = field[actualC + counterC - 1][actualR + counterR];
         if (insidePositionLeft == 3) {
           // Tile already occupied by another piece, movement is not possible
@@ -179,7 +179,7 @@ void moveRight() {
 
         insidePosition = field[actualC + counterC][actualR + counterR];
 
-        if (insidePosition == 1 || insidePosition == 2) {
+        if (insidePosition == 1) {
           if (actualC + counterC + 1 < F_COLS) {
             insidePositionRight = field[actualC + counterC + 1][actualR + counterR];
 
@@ -207,7 +207,7 @@ void moveRight() {
 
           insidePosition = field[actualC + counterC][actualR + counterR];
 
-          if (insidePosition == 1 || insidePosition == 2) {
+          if (insidePosition == 1) {
             if (actualC + counterC + 1 < F_COLS) {
               field[actualC + counterC + 1][actualR + counterR] = insidePosition;
 
@@ -237,8 +237,7 @@ int moveDown() {
   for (int counterC = 0; counterC < 4 && isPossible == 1; counterC++) {
     for (int counterR = 0; counterR < 4; counterR++) {
       if (actualR + counterR < F_ROWS && actualC + counterC < F_COLS) {
-        if (field[actualC + counterC][actualR + counterR] == 1 ||
-            field[actualC + counterC][actualR + counterR] == 2) {
+        if (field[actualC + counterC][actualR + counterR] == 1) {
           if (actualR + counterR > F_ROWS - 2) {
             isPossible = 0;
             break;
@@ -280,8 +279,7 @@ int moveDown() {
       for (int counterC = 0; counterC < 4; counterC++) {
         for (int counterR = 0; counterR < 4 && actualR + counterR < F_ROWS; counterR++) {
           if (actualR + counterR < F_ROWS && actualC + counterC < F_COLS) {
-            if (field[actualC + counterC][actualR + counterR] == 1 ||
-                field[actualC + counterC][actualR + counterR] == 2) {
+            if (field[actualC + counterC][actualR + counterR] == 1) {
               field[actualC + counterC][actualR + counterR] = 3;
             }
           }
@@ -315,33 +313,17 @@ void rotatePiece() {
   else
     rotation += 1;
 
-  for (c = 0; c < 4 && y == 99; c++) {
-    for (r = 0; r < 4; r++) {
-      int pos = pieces[actualPiece][rotation][c][r];
-
-      if (pos == 2) {
-        y = c;
-        break;
-      }
-    }
-  }
-
-  for (c = 0; c < 4 && isPossible == 0; c++) {
-    for (r = 0; r < 4; r++) {
+  for (int c = 0; c < 4 && isPossible == 0; c++) {
+    for (int r = 0; r < 4; r++) {
       if (actualC + c >= 0 && actualC + c < F_COLS && actualR + r >= 0 &&
           actualR + r < F_ROWS - 1) {
         pos_f = field[actualC + c][actualR + r];
-        int pos = pieces[actualPiece][rotation][c][r];
+        pos = pieces[actualPiece][rotation][c][r];
 
         if (pos_f == 3 && pos != 0) {
           isPossible = 1;
           break;
         }
-
-        if (pos_f == 2) {
-          yActual = c;
-        }
-
       } else {
         if (pos != 0) {
           isPossible = 1;
@@ -351,12 +333,12 @@ void rotatePiece() {
     }
   }
 
-  if (actualC + yActual - y < 0 || isPossible == 1) {
+  if (actualC + yActual < 0 || isPossible == 1) {
     /* Impossible to do the rotation */
     rotation = rotation - 1;
   } else {
-    for (c = 3; c >= 0 && exit != 1; c--) {
-      for (r = 3; r >= 0 && exit != 1; r--) {
+    for (int c = 3; c >= 0 && exit != 1; c--) {
+      for (int r = 3; r >= 0 && exit != 1; r--) {
         pos = pieces[actualPiece][rotation][c][r];
 
         if (actualC + c >= 0 && actualC + c < F_COLS) {
@@ -386,16 +368,11 @@ void rotatePiece() {
 }
 
 void checkIfLine() {
-  int columns;
-  int rows;
+  int line = 1; /* 1 line complete, 0 no*/
 
-  int line;
-
-  line = 1; /* 1 line complete, 0 no*/
-
-  for (rows = F_ROWS - 1; rows >= 0; rows--) {
+  for (int rows = F_ROWS - 1; rows >= 0; rows--) {
     line = 1;
-    for (columns = 0; columns < F_COLS; columns++) {
+    for (int columns = 0; columns < F_COLS; columns++) {
       if (field[columns][rows] != 3) {
         line = 0;
         break;
@@ -407,7 +384,7 @@ void checkIfLine() {
       score += 50;
 
       for (rows2 = rows; rows2 > 0; rows2--) {
-        for (columns = 0; columns < F_COLS; columns++) {
+        for (int columns = 0; columns < F_COLS; columns++) {
           if (rows2 - 1 == 0) {
             field[columns][rows2 - 1] = 0;
           }
