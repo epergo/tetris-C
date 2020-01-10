@@ -368,32 +368,30 @@ void rotatePiece() {
 }
 
 void checkIfLine() {
-  int line = 1; /* 1 line complete, 0 no*/
-
   for (int rows = F_ROWS - 1; rows >= 0; rows--) {
-    line = 1;
+    bool line = true;
     for (int columns = 0; columns < F_COLS; columns++) {
       if (field[columns][rows] != 3) {
-        line = 0;
+        line = false;
         break;
       }
     }
 
-    if (line == 1) {
-      int rows2;
-      score += 50;
-
-      for (rows2 = rows; rows2 > 0; rows2--) {
-        for (int columns = 0; columns < F_COLS; columns++) {
-          if (rows2 - 1 == 0) {
-            field[columns][rows2 - 1] = 0;
-          }
-
-          field[columns][rows2] = field[columns][rows2 - 1];
-        }
-      }
-      rows++;
+    if (!line) {
+      return;
     }
+
+    score += 50;
+    for (int rows2 = rows; rows2 > 0; rows2--) {
+      for (int columns = 0; columns < F_COLS; columns++) {
+        if (rows2 - 1 == 0) {
+          field[columns][rows2 - 1] = 0;
+        }
+
+        field[columns][rows2] = field[columns][rows2 - 1];
+      }
+    }
+    rows++;
   }
 }
 
