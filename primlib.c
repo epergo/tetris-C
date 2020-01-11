@@ -27,7 +27,13 @@ void filledRect(int x1, int y1, int x2, int y2, enum color c) {
 }
 
 void filledRectRGB(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
-  boxRGBA(sdlRenderer, x1, y1, x2, y2, r, g, b, 255);
+  SDL_Rect rect;
+  rect.x = x1;
+  rect.y = y1;
+  rect.w = x2 - x1;
+  rect.h = y2 - y1;
+  SDL_SetRenderDrawColor(sdlRenderer, r, g, b, 255);
+  SDL_RenderFillRect(sdlRenderer, &rect);
 }
 
 void clearScreen() {

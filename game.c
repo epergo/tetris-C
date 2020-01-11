@@ -6,8 +6,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+const int empty = 0;
+const int player = 1;
+const int filled = 2;
+
 /* Global variables */
-bool drawGrill = false;
 bool playing = true;
 int rotation = 0;
 int score = 0;
@@ -18,6 +21,23 @@ int actualR;
 double actualY;
 int actualPiece;
 int nextPiece;
+
+int whatIsInside(int value) {
+  switch (value) {
+  case 0:
+    return empty;
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  case 5:
+  case 6:
+  case 7:
+    return player;
+  default:
+    return filled;
+  }
+}
 
 int play() {
   /* Init the seed for random numbers */
@@ -43,7 +63,7 @@ int play() {
       playing = false;
     } else {
       movePiece(keyPressed);
-      drawField(field, drawGrill);
+      drawField(field);
       drawControlsAndScore(score);
       drawNextPiece(pieces, nextPiece);
 
@@ -73,7 +93,7 @@ int setNewPieceInField(int type) {
 
   for (int counterC = 0; counterC < 4; counterC++) {
     for (int counterR = 0; counterR < 4; counterR++) {
-      if (field[actualC + counterC][counterR] == 0) {
+      if (field[actualC + counterC][counterR] == empty) {
         field[actualC + counterC][counterR] = pieces[type][rotation][counterC][counterR];
       } else {
         // Tile already occupied, GameOver
@@ -88,9 +108,6 @@ int setNewPieceInField(int type) {
 void movePiece(int key) {
   int wait;
   switch (key) {
-  case SDLK_1:
-    drawGrill = !drawGrill;
-    break;
   case SDLK_LEFT:
     moveLeft();
     moveDown();
@@ -127,9 +144,9 @@ void moveLeft() {
       }
 
       int insidePosition = field[actualC + counterC][actualR + counterR];
-      if (insidePosition == 1) {
+      if (whatIsInside(insidePosition) == player) {
         int insidePositionLeft = field[actualC + counterC - 1][actualR + counterR];
-        if (insidePositionLeft == 3) {
+        if (whatIsInside(insidePositionLeft) == filled) {
           // Tile already occupied by another piece, movement is not possible
           isPossible = false;
           break;
@@ -146,7 +163,7 @@ void moveLeft() {
   for (int counterC = 0; counterC < 4; counterC++) {
     for (int counterR = 0; counterR < 4; counterR++) {
       int insidePosition = field[actualC + counterC][actualR + counterR];
-      if (actualC + counterC == F_COLS || (insidePosition != 1 && insidePosition != 2)) {
+      if (actualC + counterC == F_COLS || (whatIsInside(insidePosition) != player)) {
         continue;
       }
 
@@ -156,7 +173,8 @@ void moveLeft() {
       // current piece is there
       if (actualC + counterC + 1 < F_COLS) {
         int insidePositionRight = field[actualC + counterC + 1][actualR + counterR];
-        if (insidePositionRight == 0 || insidePositionRight == 3) {
+        if (whatIsInside(insidePositionRight) == empty ||
+            whatIsInside(insidePositionRight) == filled) {
           field[actualC + counterC][actualR + counterR] = 0;
         }
       } else {
@@ -172,18 +190,13 @@ void moveRight() {
   int isPossible = 1; /* 1 is possible, 0 no */
 
   for (int counterC = 0; counterC < 4 && isPossible == 1; counterC++) {
-    for (int counterR = 0; counterR < 4 && isPossible == 1; counterR++) {
+    for (int counterR = 0; counterR < 4; counterR++) {
       if (actualC + counterC < F_COLS) {
-        int insidePosition;
-        int insidePositionRight;
-
-        insidePosition = field[actualC + counterC][actualR + counterR];
-
-        if (insidePosition == 1) {
+        int insidePosition = field[actualC + counterC][actualR + counterR];
+        if (whatIsInside(insidePosition) == player) {
           if (actualC + counterC + 1 < F_COLS) {
-            insidePositionRight = field[actualC + counterC + 1][actualR + counterR];
-
-            if (insidePositionRight != 3) {
+            int insidePositionRight = field[actualC + counterC + 1][actualR + counterR];
+            if (whatIsInside(insidePositionRight) != filled) {
               /* OK */
             } else {
               isPossible = 0;
@@ -202,19 +215,15 @@ void moveRight() {
     for (int counterC = 3; counterC >= 0; counterC--) {
       for (int counterR = 0; counterR < 4; counterR++) {
         if (actualC + counterC + 1 < F_COLS) {
-          int insidePosition;
-          int insidePositionLeft;
-
-          insidePosition = field[actualC + counterC][actualR + counterR];
-
-          if (insidePosition == 1) {
+          int insidePosition = field[actualC + counterC][actualR + counterR];
+          if (whatIsInside(insidePosition) == player) {
             if (actualC + counterC + 1 < F_COLS) {
               field[actualC + counterC + 1][actualR + counterR] = insidePosition;
 
               if (actualC + counterC > 0) {
-                insidePositionLeft = field[actualC + counterC - 1][actualR + counterR];
-
-                if (insidePositionLeft == 0 || insidePositionLeft == 3) {
+                int insidePositionLeft = field[actualC + counterC - 1][actualR + counterR];
+                if (whatIsInside(insidePositionLeft) == empty ||
+                    whatIsInside(insidePositionLeft) == filled) {
                   field[actualC + counterC][actualR + counterR] = 0;
                 }
               } else {
@@ -237,11 +246,11 @@ int moveDown() {
   for (int counterC = 0; counterC < 4 && isPossible == 1; counterC++) {
     for (int counterR = 0; counterR < 4; counterR++) {
       if (actualR + counterR < F_ROWS && actualC + counterC < F_COLS) {
-        if (field[actualC + counterC][actualR + counterR] == 1) {
+        if (whatIsInside(field[actualC + counterC][actualR + counterR]) == player) {
           if (actualR + counterR > F_ROWS - 2) {
             isPossible = 0;
             break;
-          } else if (field[actualC + counterC][actualR + counterR + 1] == 3) {
+          } else if (whatIsInside(field[actualC + counterC][actualR + counterR + 1]) == filled) {
             isPossible = 0;
             break;
           }
@@ -259,13 +268,13 @@ int moveDown() {
       for (int counterC = 0; counterC < 4; counterC++) {
         for (int counterR = 3; counterR >= 0; counterR--) {
           if (actualR + counterR + 1 < F_ROWS && actualC + counterC < F_COLS) {
-            if (field[actualC + counterC][actualR + counterR] != 3 &&
-                field[actualC + counterC][actualR + counterR] != 0) {
+            if (whatIsInside(field[actualC + counterC][actualR + counterR]) != filled &&
+                whatIsInside(field[actualC + counterC][actualR + counterR]) != empty) {
               field[actualC + counterC][actualR + counterR + 1] =
                   field[actualC + counterC][actualR + counterR];
 
               if (actualR + counterR - 1 < 0 ||
-                  field[actualC + counterC][actualR + counterR - 1] == 3)
+                  whatIsInside(field[actualC + counterC][actualR + counterR - 1]) == filled)
                 field[actualC + counterC][actualR + counterR] = 0;
               else
                 field[actualC + counterC][actualR + counterR] =
@@ -279,8 +288,8 @@ int moveDown() {
       for (int counterC = 0; counterC < 4; counterC++) {
         for (int counterR = 0; counterR < 4 && actualR + counterR < F_ROWS; counterR++) {
           if (actualR + counterR < F_ROWS && actualC + counterC < F_COLS) {
-            if (field[actualC + counterC][actualR + counterR] == 1) {
-              field[actualC + counterC][actualR + counterR] = 3;
+            if (whatIsInside(field[actualC + counterC][actualR + counterR]) == player) {
+              field[actualC + counterC][actualR + counterR] = (actualPiece + 1) * 100;
             }
           }
         }
@@ -320,7 +329,7 @@ void rotatePiece() {
         pos_f = field[actualC + c][actualR + r];
         pos = pieces[actualPiece][rotation][c][r];
 
-        if (pos_f == 3 && pos != 0) {
+        if (whatIsInside(pos_f) == filled && pos != 0) {
           isPossible = 1;
           break;
         }
@@ -345,7 +354,7 @@ void rotatePiece() {
           if (actualR + r >= 0 && actualR + r < F_ROWS - 1) {
             pos_f = field[actualC + c][actualR + r];
 
-            if (pos_f != 3) {
+            if (whatIsInside(pos_f) != filled) {
               field[actualC + c][actualR + r] = pos;
             } else {
               if (pos != 0)
@@ -371,27 +380,25 @@ void checkIfLine() {
   for (int rows = F_ROWS - 1; rows >= 0; rows--) {
     bool line = true;
     for (int columns = 0; columns < F_COLS; columns++) {
-      if (field[columns][rows] != 3) {
+      if (whatIsInside(field[columns][rows]) != filled) {
         line = false;
         break;
       }
     }
 
-    if (!line) {
-      return;
-    }
+    if (line) {
+      score += 50;
+      for (int rows2 = rows; rows2 > 0; rows2--) {
+        for (int columns = 0; columns < F_COLS; columns++) {
+          if (rows2 - 1 == 0) {
+            field[columns][rows2 - 1] = empty;
+          }
 
-    score += 50;
-    for (int rows2 = rows; rows2 > 0; rows2--) {
-      for (int columns = 0; columns < F_COLS; columns++) {
-        if (rows2 - 1 == 0) {
-          field[columns][rows2 - 1] = 0;
+          field[columns][rows2] = field[columns][rows2 - 1];
         }
-
-        field[columns][rows2] = field[columns][rows2 - 1];
       }
+      rows++;
     }
-    rows++;
   }
 }
 

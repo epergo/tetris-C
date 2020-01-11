@@ -2,7 +2,13 @@
 #include "primlib.h"
 #include <stdbool.h>
 
-void drawField(int field[F_COLS][F_ROWS], bool drawGrill) {
+extern const Uint8 pieceColor[7][3];
+extern const char pieces[7][4][4][4];
+extern const int empty;
+extern const int player;
+extern const int filled;
+
+void drawField(int field[F_COLS][F_ROWS]) {
   int screenWidthPadding = (screenWidth() - (F_COLS * SQUARE_WIDTH)) / 2;
   int screenHeightPadding = (screenHeight() - (F_ROWS * SQUARE_WIDTH)) / 2;
 
@@ -19,18 +25,17 @@ void drawField(int field[F_COLS][F_ROWS], bool drawGrill) {
       int y1 = screenHeightPadding + counter_r * 20;
       int y2 = screenHeightPadding + (counter_r + 1) * 20;
 
-      if (field[counter_c][counter_r] == 0) {
-        if (drawGrill) {
-          rectRGB(x1, y1, x2, y2, 92, 92, 92);
-        }
-      } else {
-        if (field[counter_c][counter_r] == 1) {
-          filledRect(x1, y1, x2, y2, GREEN);
-          rect(x1, y1, x2, y2, BLACK);
-        } else if (field[counter_c][counter_r] == 3) {
-          filledRect(x1, y1, x2, y2, RED);
-          rect(x1, y1, x2, y2, WHITE);
-        }
+      rectRGB(x1, y1, x2, y2, 13, 13, 13);
+      if (whatIsInside(field[counter_c][counter_r]) == player) {
+        Uint8 piece = field[counter_c][counter_r] - 1;
+        filledRectRGB(x1, y1, x2, y2, pieceColor[piece][0], pieceColor[piece][1],
+                      pieceColor[piece][2]);
+        rect(x1, y1, x2, y2, WHITE);
+      } else if (whatIsInside(field[counter_c][counter_r]) == filled) {
+        Uint8 piece = (field[counter_c][counter_r] / 100) - 1;
+        filledRectRGB(x1, y1, x2, y2, pieceColor[piece][0], pieceColor[piece][1],
+                      pieceColor[piece][2]);
+        rect(x1, y1, x2, y2, WHITE);
       }
     }
   }
@@ -45,13 +50,6 @@ void drawControlsAndScore(int score) {
 
   textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
           "CONTROLS:", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "1", RED);
-  textOut(screenWidth() - screenWidthPadding + 33, screenHeightPadding + padding,
-          "-> draw a grill to", YELLOW);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "help you",
-          YELLOW);
   padding += increment;
   textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "left arrow",
           RED);
@@ -89,7 +87,7 @@ void drawControlsAndScore(int score) {
   textOut(50 + 48, screenHeightPadding + padding, str, YELLOW);
 }
 
-void drawNextPiece(char pieces[7][4][4][4], int nextPiece) {
+void drawNextPiece(const char pieces[7][4][4][4], int nextPiece) {
   int screenWidthPadding = (screenWidth() - (F_COLS * SQUARE_WIDTH)) / 3;
   int screenHeightPadding = (screenHeight() - (F_ROWS * SQUARE_WIDTH)) / 2;
 
@@ -105,8 +103,10 @@ void drawNextPiece(char pieces[7][4][4][4], int nextPiece) {
       int y1 = screenHeightPadding + (counterR + 2) * 20;
       int y2 = screenHeightPadding + (counterR + 3) * 20;
 
-      if (pieces[nextPiece][0][counterC][counterR] == 1) {
-        filledRect(x1, y1, x2, y2, GREEN);
+      if (whatIsInside(pieces[nextPiece][0][counterC][counterR]) == player) {
+        filledRectRGB(x1, y1, x2, y2, pieceColor[nextPiece][0], pieceColor[nextPiece][1],
+                      pieceColor[nextPiece][2]);
+        rect(x1, y1, x2, y2, WHITE);
       }
     }
   }
