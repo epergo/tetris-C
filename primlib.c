@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdio.h>
 
 #include <SDL.h>
@@ -9,35 +8,16 @@
 static SDL_Window *sdlWindow;
 static SDL_Renderer *sdlRenderer;
 
-static Uint32 colors[COLOR_MAX] = {0xff0000ff, 0xff0000ff, 0xceceb7ff, 0xfdf498ff,
-                                   0x7bc043ff, 0xff00ffff, 0xffff00ff, 0xffffffff};
-
-void rect(int x1, int y1, int x2, int y2, enum color c) {
-  assert(c < COLOR_MAX);
-  rectangleColor(sdlRenderer, x1, y1, x2, y2, colors[c]);
+void rect(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
+  rectangleRGBA(sdlRenderer, x1, y1, x2 + 1, y2 + 1, r, g, b, SDL_ALPHA_OPAQUE);
 }
 
-void rectRGB(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
-  rectangleRGBA(sdlRenderer, x1, y1, x2, y2, r, g, b, 255);
-}
-
-void filledRect(int x1, int y1, int x2, int y2, enum color c) {
-  assert(c < COLOR_MAX);
-  boxColor(sdlRenderer, x1, y1, x2, y2, colors[c]);
-}
-
-void filledRectRGB(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
-  SDL_Rect rect;
-  rect.x = x1;
-  rect.y = y1;
-  rect.w = x2 - x1;
-  rect.h = y2 - y1;
-  SDL_SetRenderDrawColor(sdlRenderer, r, g, b, 255);
-  SDL_RenderFillRect(sdlRenderer, &rect);
+void filledRect(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b) {
+  boxRGBA(sdlRenderer, x1, y1, x2, y2, r, g, b, SDL_ALPHA_OPAQUE);
 }
 
 void clearScreen() {
-  SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  SDL_SetRenderDrawColor(sdlRenderer, 10, 10, 10, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(sdlRenderer);
 }
 
@@ -57,9 +37,8 @@ int screenHeight() {
   return h;
 }
 
-void textOut(int x, int y, char *s, enum color c) {
-  assert(c < COLOR_MAX);
-  stringColor(sdlRenderer, x, y, s, colors[c]);
+void textOut(int x, int y, char *s, Uint8 r, Uint8 g, Uint8 b) {
+  stringRGBA(sdlRenderer, x, y, s, r, g, b, 255);
 }
 
 int getKey() {
