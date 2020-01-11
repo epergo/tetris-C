@@ -64,8 +64,9 @@ int play() {
     } else {
       movePiece(keyPressed);
       drawField(field);
-      drawControlsAndScore(score);
-      drawNextPiece(pieces, nextPiece);
+      drawControls();
+      drawScore(score);
+      drawNextPiece(nextPiece);
 
       updateScreen();
       SDL_Delay(DELAY);
@@ -405,14 +406,7 @@ void checkIfLine() {
 void endGame() {
   initField();
 
-  char str[100];
-  sprintf(str, "%d", score);
-  textOut(screenWidth() / 3 + 145, screenHeight() / 2 - 25, "SCORE", YELLOW);
-  textOut(screenWidth() / 3 + 215, screenHeight() / 2 - 25, str, YELLOW);
-
-  textOut(screenWidth() / 3 + 25, screenHeight() / 2 - 25, "GAME OVER", RED);
-  textOut(screenWidth() / 3 - 25, screenHeight() / 2, "PRESS ENTER TO PLAY AGAIN OR ESC TO EXIT",
-          RED);
+  drawEndGame(score);
   updateScreen();
 
   int key = getKey();
