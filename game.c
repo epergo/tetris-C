@@ -1,7 +1,9 @@
 #include "game.h"
+#include "audio/audio.h"
 #include "pieces.inl"
 #include "primlib.h"
 #include "userInterface.h"
+#include <SDL_mixer.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
@@ -10,10 +12,16 @@ const int empty = 0;
 const int player = 1;
 const int filled = 2;
 
+Audio *music1;
+Audio *music2;
+Audio *music3;
+
 /* Global variables */
 bool playing = true;
 int rotation = 0;
 int score = 0;
+int delay = 16;
+int level = 0;
 
 int field[F_COLS][F_ROWS];
 int actualC;
@@ -21,6 +29,24 @@ int actualR;
 double actualY;
 int actualPiece;
 int nextPiece;
+
+void increaseLevel() {
+  if (score < 100 && level < 1) {
+    unpauseAudio();
+    delay = 16;
+    playMusicFromMemory(music1, SDL_MIX_MAXVOLUME);
+    // playSoundFromMemory(music1, SDL_MIX_MAXVOLUME);
+    level = 1;
+  } else if (score >= 100 && score < 200 && level < 2) {
+    delay = 8;
+    playMusicFromMemory(music2, SDL_MIX_MAXVOLUME);
+    level = 2;
+  } else if (score >= 200 && level < 3) {
+    delay = 1;
+    playMusicFromMemory(music3, SDL_MIX_MAXVOLUME);
+    level = 3;
+  }
+}
 
 int whatIsInside(int value) {
   switch (value) {
@@ -56,6 +82,11 @@ int play() {
   nextPiece = rand() % 7;
   setNewPieceInField(actualPiece);
 
+  music1 = createAudio("music/tetris.wav", 0, SDL_MIX_MAXVOLUME);
+  music2 = createAudio("music/tetris2.wav", 0, SDL_MIX_MAXVOLUME);
+  music3 = createAudio("music/tetris3.wav", 0, SDL_MIX_MAXVOLUME);
+  increaseLevel();
+
   do {
     clearScreen();
     int keyPressed = getKey();
@@ -69,7 +100,7 @@ int play() {
       drawNextPiece(nextPiece);
 
       updateScreen();
-      SDL_Delay(DELAY);
+      SDL_Delay(delay);
     }
   } while (playing);
 
@@ -389,6 +420,7 @@ void checkIfLine() {
 
     if (line) {
       score += 50;
+      increaseLevel();
       for (int rows2 = rows; rows2 > 0; rows2--) {
         for (int columns = 0; columns < F_COLS; columns++) {
           if (rows2 - 1 == 0) {
@@ -405,6 +437,7 @@ void checkIfLine() {
 
 void endGame() {
   initField();
+  pauseAudio();
 
   drawEndGame(score);
   updateScreen();
@@ -419,6 +452,9 @@ void endGame() {
   case SDLK_RETURN:
     playing = true;
     actualPiece = rand() % 7;
+    score = 0;
+    level = 0;
+    increaseLevel();
 
     setNewPieceInField(actualPiece);
     break;

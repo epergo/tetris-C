@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL2_gfxPrimitives.h>
 
+#include "audio/audio.h"
 #include "primlib.h"
 
 static SDL_Window *sdlWindow;
@@ -62,7 +63,7 @@ int initGraph(char *title) {
   }
 
   // Initialize SDL
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
     printf("SDL could not be initialized! SDL_Error: %s\n", SDL_GetError());
     return 1;
   }
@@ -81,6 +82,8 @@ int initGraph(char *title) {
     fprintf(stderr, "Error when obtaining the renderer, SDL_Error: %s\n", SDL_GetError());
     return 1;
   }
+
+  initAudio();
 
   return 0;
 }

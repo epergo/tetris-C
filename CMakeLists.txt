@@ -24,6 +24,10 @@ INCLUDE_DIRECTORIES(${SDL2_GFX_INCLUDE_DIRS})
 
 include_directories(.)
 
-add_executable(tetris main.c pieces.inl primlib.c primlib.h game.c game.h userInterface.c userInterface.h)
+add_executable(tetris main.c pieces.inl primlib.c primlib.h game.c game.h audio/audio.h audio/audio.c userInterface.c userInterface.h)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARIES})
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/music $<TARGET_FILE_DIR:${PROJECT_NAME}>/music)
