@@ -57,37 +57,39 @@ void drawControls() {
   int screenWidthPadding = (screenWidth() - (F_COLS * squareWidth)) / 2;
   int screenHeightPadding = (screenHeight() - (F_ROWS * squareWidth)) / 2;
 
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "CONTROLS:", 0, 0,
-          0);
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "CONTROLS:", 179,
+          143, 8);
   padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "left arrow", 0,
-          0, 0);
-  textOut(screenWidth() - screenWidthPadding + 115, screenHeightPadding + padding, "-> move the", 0,
-          0, 0);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
-          "piece to the left", 0, 0, 0);
-  padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "right arrow", 0,
-          0, 0);
-  textOut(screenWidth() - screenWidthPadding + 113, screenHeightPadding + padding, "-> move the", 0,
-          0, 0);
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "left arrow", 76,
+          2, 243);
+  textOut(screenWidth() - screenWidthPadding + 115, screenHeightPadding + padding, "-> move the",
+          131, 0, 169);
   padding += increment;
   textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
-          "piece to the right", 0, 0, 0);
+          "piece to the left", 131, 0, 169);
   padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "space ", 0, 0,
-          0);
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "right arrow", 76,
+          2, 243);
+  textOut(screenWidth() - screenWidthPadding + 113, screenHeightPadding + padding, "-> move the",
+          131, 0, 169);
+  padding += increment;
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding,
+          "piece to the right", 131, 0, 169);
+  padding += increment;
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "space ", 76, 2,
+          243);
   textOut(screenWidth() - screenWidthPadding + 73, screenHeightPadding + padding,
-          "-> piece to floor", 0, 0, 0);
+          "-> piece to floor", 131, 0, 169);
   padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "enter", 0, 0, 0);
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "enter", 76, 2,
+          243);
   textOut(screenWidth() - screenWidthPadding + 65, screenHeightPadding + padding, "-> rotate piece",
-          0, 0, 0);
+          131, 0, 169);
   padding += increment;
-  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "ESC", 0, 0, 0);
+  textOut(screenWidth() - screenWidthPadding + 25, screenHeightPadding + padding, "ESC", 76, 2,
+          243);
   textOut(screenWidth() - screenWidthPadding + 49, screenHeightPadding + padding,
-          "-> exits the game", 0, 0, 0);
+          "-> exits the game", 131, 0, 169);
   padding += increment;
 }
 
@@ -121,10 +123,10 @@ void drawEndGame(int score) {
   char str[100];
   sprintf(str, "%d", score);
 
-  textOut(screenWidth() / 3 + 145, screenHeight() / 2 - 25, "SCORE", 0, 0, 0);
-  textOut(screenWidth() / 3 + 215, screenHeight() / 2 - 25, str, 0, 0, 0);
+  textOut(screenWidth() / 3 + 145, screenHeight() / 2 - 25, "SCORE", 131, 0, 169);
+  textOut(screenWidth() / 3 + 215, screenHeight() / 2 - 25, str, 131, 0, 169);
 
-  textOut(screenWidth() / 3 + 25, screenHeight() / 2 - 25, "GAME OVER", 0, 0, 0);
-  textOut(screenWidth() / 3 - 25, screenHeight() / 2, "PRESS ENTER TO PLAY AGAIN OR ESC TO EXIT", 0,
-          0, 0);
+  textOut(screenWidth() / 3 + 25, screenHeight() / 2 - 25, "GAME OVER", 190, 0, 22);
+  textOut(screenWidth() / 3 - 25, screenHeight() / 2, "PRESS ENTER TO PLAY AGAIN OR ESC TO EXIT",
+          179, 143, 8);
 }
