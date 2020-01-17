@@ -4,9 +4,6 @@
 extern const Uint8 pieceColor[7][3];
 extern const Uint8 setPieceColor[7][3];
 extern const char pieces[7][4][4][4];
-extern const int empty;
-extern const int player;
-extern const int filled;
 
 const int squareWidth = 20;
 
@@ -28,13 +25,13 @@ void drawField(int field[F_COLS][F_ROWS]) {
       int y2 = screenHeightPadding + (counter_r + 1) * 20;
 
       rect(x1, y1, x2, y2, 23, 23, 23);
-      if (whatIsInside(field[counter_c][counter_r]) == player) {
+      if (whatIsInside(field[counter_c][counter_r]) == PLAYER) {
         Uint8 piece = field[counter_c][counter_r] - 1;
         filledRect(x1, y1, x2, y2, pieceColor[piece][0], pieceColor[piece][1],
                    pieceColor[piece][2]);
 
         rect(x1, y1, x2, y2, 26, 26, 26);
-      } else if (whatIsInside(field[counter_c][counter_r]) == filled) {
+      } else if (whatIsInside(field[counter_c][counter_r]) == FILLED) {
         Uint8 piece = (field[counter_c][counter_r] / 100) - 1;
         filledRect(x1, y1, x2, y2, setPieceColor[piece][0], setPieceColor[piece][1],
                    setPieceColor[piece][2]);
@@ -110,7 +107,7 @@ void drawNextPiece(int nextPiece) {
       int y1 = screenHeightPadding + (counterR + 2) * 20;
       int y2 = screenHeightPadding + (counterR + 3) * 20;
 
-      if (whatIsInside(pieces[nextPiece][0][counterC][counterR]) == player) {
+      if (whatIsInside(pieces[nextPiece][0][counterC][counterR]) == PLAYER) {
         filledRect(x1, y1, x2, y2, pieceColor[nextPiece][0], pieceColor[nextPiece][1],
                    pieceColor[nextPiece][2]);
 
